@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="label_1">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>120</y>
+      <width>311</width>
+      <height>211</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>120</y>
+      <width>331</width>
+      <height>211</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>文件</string>
+    </property>
+    <addaction name="actiondefault_file"/>
+    <addaction name="actioncustomization_file"/>
+    <addaction name="actionrehabilitation"/>
+    <addaction name="actionpurge"/>
+    <addaction name="actionexit"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>颜色效果</string>
+    </property>
+    <widget class="QMenu" name="menucolor_channels">
+     <property name="title">
+      <string>color channels</string>
+     </property>
+     <addaction name="actionR_channel"/>
+     <addaction name="actionG_channel"/>
+     <addaction name="actionB_channel"/>
+    </widget>
+    <addaction name="actionold_photos"/>
+    <addaction name="actionred_green_swap"/>
+    <addaction name="actiongrayscale"/>
+    <addaction name="actionbinarization"/>
+    <addaction name="actioncolor_transformation"/>
+    <addaction name="menucolor_channels"/>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>手工画</string>
+    </property>
+    <addaction name="actionwoodcarving"/>
+    <addaction name="actionpencil_drawing"/>
+    <addaction name="actionsketching"/>
+   </widget>
+   <widget class="QMenu" name="menu_4">
+    <property name="title">
+     <string>艺术效果</string>
+    </property>
+    <widget class="QMenu" name="menufilter">
+     <property name="title">
+      <string>filter</string>
+     </property>
+     <addaction name="actionmaximum"/>
+     <addaction name="actionminimum"/>
+    </widget>
+    <addaction name="actiondifuse"/>
+    <addaction name="actionblur"/>
+    <addaction name="actionsoften"/>
+    <addaction name="actionsharpen"/>
+    <addaction name="menufilter"/>
+    <addaction name="actioncomic_strip"/>
+    <addaction name="actionmelt"/>
+    <addaction name="actionfreeze"/>
+   </widget>
+   <widget class="QMenu" name="menu_5">
+    <property name="title">
+     <string>光线</string>
+    </property>
+    <addaction name="actioninverted"/>
+    <addaction name="actionglare"/>
+    <addaction name="actionblack_and_white_negative"/>
+   </widget>
+   <widget class="QMenu" name="menu_6">
+    <property name="title">
+     <string>雕刻</string>
+    </property>
+    <widget class="QMenu" name="menuembossed">
+     <property name="title">
+      <string>embossed</string>
+     </property>
+     <addaction name="actioneffect_1"/>
+     <addaction name="actioneffect_2"/>
+     <addaction name="actioneffect_3"/>
+     <addaction name="actioneffect_4"/>
+    </widget>
+    <widget class="QMenu" name="menuintaglio">
+     <property name="title">
+      <string>intaglio</string>
+     </property>
+     <addaction name="actioneffect_A"/>
+     <addaction name="actioneffect_B"/>
+     <addaction name="actioneffect_C"/>
+     <addaction name="actioneffect_D"/>
+    </widget>
+    <addaction name="menuembossed"/>
+    <addaction name="menuintaglio"/>
+   </widget>
+   <widget class="QMenu" name="menu_7">
+    <property name="title">
+     <string>帮助</string>
+    </property>
+    <addaction name="actionversion"/>
+    <addaction name="actionauthor"/>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
+   <addaction name="menu_4"/>
+   <addaction name="menu_5"/>
+   <addaction name="menu_6"/>
+   <addaction name="menu_7"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actiondefault_file">
+   <property name="text">
+    <string>default file</string>
+   </property>
+  </action>
+  <action name="actioncustomization_file">
+   <property name="text">
+    <string>customization file</string>
+   </property>
+   <property name="toolTip">
+    <string>customization file</string>
+   </property>
+  </action>
+  <action name="actionold_photos">
+   <property name="text">
+    <string>old photos</string>
+   </property>
+  </action>
+  <action name="actionred_green_swap">
+   <property name="text">
+    <string>red-green swap</string>
+   </property>
+  </action>
+  <action name="actiongrayscale">
+   <property name="text">
+    <string>grayscale</string>
+   </property>
+  </action>
+  <action name="actionbinarization">
+   <property name="text">
+    <string>binarization</string>
+   </property>
+  </action>
+  <action name="actioncolor_transformation">
+   <property name="text">
+    <string>color transformation</string>
+   </property>
+  </action>
+  <action name="actionR_channel">
+   <property name="text">
+    <string>R channel</string>
+   </property>
+  </action>
+  <action name="actionG_channel">
+   <property name="text">
+    <string>G channel</string>
+   </property>
+  </action>
+  <action name="actionB_channel">
+   <property name="text">
+    <string>B channel</string>
+   </property>
+  </action>
+  <action name="actionwoodcarving">
+   <property name="text">
+    <string>woodcarving</string>
+   </property>
+  </action>
+  <action name="actionpencil_drawing">
+   <property name="text">
+    <string>pencil drawing</string>
+   </property>
+  </action>
+  <action name="actionsketching">
+   <property name="text">
+    <string>sketching</string>
+   </property>
+  </action>
+  <action name="actiondifuse">
+   <property name="text">
+    <string>difuse</string>
+   </property>
+  </action>
+  <action name="actionblur">
+   <property name="text">
+    <string>blur</string>
+   </property>
+  </action>
+  <action name="actionsoften">
+   <property name="text">
+    <string>soften</string>
+   </property>
+  </action>
+  <action name="actionsharpen">
+   <property name="text">
+    <string>sharpen</string>
+   </property>
+  </action>
+  <action name="actioncomic_strip">
+   <property name="text">
+    <string>comic strip</string>
+   </property>
+  </action>
+  <action name="actionmelt">
+   <property name="text">
+    <string>melt</string>
+   </property>
+  </action>
+  <action name="actionfreeze">
+   <property name="text">
+    <string>freeze</string>
+   </property>
+  </action>
+  <action name="actionmaximum">
+   <property name="text">
+    <string>maximum</string>
+   </property>
+  </action>
+  <action name="actionminimum">
+   <property name="text">
+    <string>minimum</string>
+   </property>
+  </action>
+  <action name="actioninverted">
+   <property name="text">
+    <string>inverted</string>
+   </property>
+  </action>
+  <action name="actionglare">
+   <property name="text">
+    <string>glare</string>
+   </property>
+  </action>
+  <action name="actionblack_and_white_negative">
+   <property name="text">
+    <string>black and white negative</string>
+   </property>
+  </action>
+  <action name="actioneffect_1">
+   <property name="text">
+    <string>effect 1</string>
+   </property>
+  </action>
+  <action name="actioneffect_2">
+   <property name="text">
+    <string>effect 2</string>
+   </property>
+  </action>
+  <action name="actioneffect_3">
+   <property name="text">
+    <string>effect 3</string>
+   </property>
+  </action>
+  <action name="actioneffect_4">
+   <property name="text">
+    <string>effect 4</string>
+   </property>
+  </action>
+  <action name="actioneffect_A">
+   <property name="text">
+    <string>effect A</string>
+   </property>
+  </action>
+  <action name="actioneffect_B">
+   <property name="text">
+    <string>effect B</string>
+   </property>
+  </action>
+  <action name="actioneffect_C">
+   <property name="text">
+    <string>effect C</string>
+   </property>
+  </action>
+  <action name="actioneffect_D">
+   <property name="text">
+    <string>effect D</string>
+   </property>
+  </action>
+  <action name="actionversion">
+   <property name="text">
+    <string>version</string>
+   </property>
+  </action>
+  <action name="actionauthor">
+   <property name="text">
+    <string>author</string>
+   </property>
+  </action>
+  <action name="actionrehabilitation">
+   <property name="text">
+    <string>rehabilitation</string>
+   </property>
+  </action>
+  <action name="actionpurge">
+   <property name="text">
+    <string>purge</string>
+   </property>
+  </action>
+  <action name="actionexit">
+   <property name="text">
+    <string>exit</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
