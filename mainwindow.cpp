@@ -4,6 +4,7 @@
 
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QDebug>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -111,12 +112,19 @@ void MainWindow::on_actionold_photos_triggered()
             q0[3*j+1] = dstG;
             q0[3*j+2] = dstB;
         }
-        showLabel(dstImg,ui->label_2);
+        cv::Size dsize = cv::Size(ui->label_2->width(),ui->label_2->height());
+        cv::resize(srcImg,dstImg,dsize);
+        myImg = QImage((const unsigned char*)(dstImg.data),dstImg.cols,dstImg.rows,dstImg.cols*dstImg.channels(),QImage::Format_Indexed8);
+        ui->label_2->clear();
+        ui->label_2->setPixmap(QPixmap::fromImage(myImg));
+//        showLabel(dstImg,ui->label_2);
+        qDebug()<<"1111111111111111";
     }
 }
 
 void MainWindow::showLabel(cv::Mat img,QLabel *l)
 {
+//    qDebug
     myImg = QImage((const unsigned char*)(img.data),img.cols,img.rows,img.rows*img.channels(),QImage::Format_RGB888);
     l->clear();
     myImg = myImg.scaled(l->width(),l->height());
