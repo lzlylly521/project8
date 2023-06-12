@@ -489,12 +489,12 @@ void MainWindow::on_actionmaximum_triggered()
 void MainWindow::on_actionminimum_triggered()
 {
     cv::Mat dst(srcImg.size(),CV_8UC3);
-    for (int y=1; y<srcImg.rows-1; y++)
+    for (int y=2; y<srcImg.rows-2; y++)
     {
         uchar* srcR= srcImg.ptr<uchar>(y);
         uchar* dstR= dst.ptr<uchar>(y);
         int br,bg,bb;
-        for (int x = 1; x < srcImg.cols-1; x++) {
+        for (int x = 2; x < srcImg.cols-2; x++) {
             br = srcR[3*x];
             bg = srcR[3*x+1];
             bb = srcR[3*x+2];
@@ -517,6 +517,390 @@ void MainWindow::on_actionminimum_triggered()
 
 void MainWindow::on_actioncomic_strip_triggered()
 {
+    cv::Mat dst(srcImg.size(),CV_8UC3);
+    for (int y = 0; y < srcImg.rows; y++) {
+        uchar* srcR= srcImg.ptr<uchar>(y);
+        uchar* dstR= dst.ptr<uchar>(y);
+        int br,bg,bb;
+        float brF,bgF,bbF;
+        for (int x = 0; x < srcImg.cols; x++) {
+            br = srcR[3*x];
+            bg = srcR[3*x+1];
+            bb = srcR[3*x+2];
 
+            brF= (abs(bg - bb + bg + br) * br) >> 8;
+            bgF= (abs(bb - bg + bb + br) * br) >> 8;
+            bbF= (abs(bb - bg + bb + br) * bg) >> 8;
+
+            brF = brF > 255? 255 : brF;
+            bgF = bgF > 255? 255 :bgF;
+            bbF = bbF > 255? 255 : bbF;
+
+            brF = brF < 0? 0 : brF;
+            bgF = bgF < 0? 0 : bgF;
+            bbF = bbF < 0? 0 : bbF;
+
+            dstR[3*x]= (uchar)brF;
+            dstR[3*x+1]= (uchar)bgF;
+            dstR[3*x+2]= (uchar)bbF;
+        }
+    }
+    normalize(dst,dst,255,0,cv::NORM_MINMAX);
+    showLabel(dst,ui->label_2);
+//    cv::Size dsize=cv::Size(ui->label_2->width(),ui->label_2->height());
+//    cv::resize(dst,dstImg,dsize);
+//    myImg = QImage((const unsigned char*)(dstImg.data),dstImg.cols,dstImg.rows,dstImg.cols*dstImg.channels(),QImage::Format_Indexed8);
+//    ui->label_2->clear();
+//    ui->label_2->setPixmap(QPixmap::fromImage(myImg));
+}
+
+
+void MainWindow::on_actionmelt_triggered()
+{
+    cv::Mat dst(srcImg.size(),CV_8UC3);
+    for (int y = 0; y < srcImg.rows; y++) {
+        uchar* srcR= srcImg.ptr<uchar>(y);
+        uchar* dstR= dst.ptr<uchar>(y);
+        int br,bg,bb;
+        for (int x = 0; x < srcImg.cols; x++) {
+            br = srcR[3*x];
+            bg = srcR[3*x+1];
+            bb = srcR[3*x+2];
+
+            br=br*128/(bg+bb +1);
+            bg= bg*128/(br+bb +1);
+            bb=bb*128/(bg+br +1);
+
+            br = br > 255? 255 : br;
+            bg = bg > 255? 255 : bg;
+            bb = bb > 255? 255 : bb;
+
+            br = br < 0? 0 : br;
+            bg = bg > 0? 0 : bg;
+            bb = bb > 0? 0 : bb;
+
+            dstR[3*x]= br;
+            dstR[3*x+1]= bg;
+            dstR[3*x+2]= bb;
+        }
+    }
+    showLabel(dst,ui->label_2);
+}
+
+
+void MainWindow::on_actionfreeze_triggered()
+{
+    cv::Mat dst(srcImg.size(),CV_8UC3);
+    for (int y = 0; y < srcImg.rows; y++) {
+        uchar* srcR= srcImg.ptr<uchar>(y);
+        uchar* dstR= dst.ptr<uchar>(y);
+        float br,bg,bb;
+        for (int x = 0; x < srcImg.cols; x++) {
+            br = srcR[3*x];
+            bg = srcR[3*x+1];
+            bb = srcR[3*x+2];
+
+            br=(br-bg-bb)*3/2;
+            bg= (bg-br-bb)*3/2;
+            bb=(bb-bg-br)*3/2;
+
+            br = br > 255? 255 : br;
+            bg = bg > 255? 255 : bg;
+            bb = bb > 255? 255 : bb;
+
+            br = br < 0? -br : br;
+            bg = bg > 0? -bg : bg;
+            bb = bb > 0? -bb : bb;
+
+            dstR[3*x]= (uchar)br;
+            dstR[3*x+1]= (uchar)bg;
+            dstR[3*x+2]= (uchar)bb;
+        }
+    }
+    showLabel(dst,ui->label_2);
+}
+
+
+void MainWindow::on_actioninverted_triggered()
+{
+    cv::Mat dst(srcImg.size(),CV_8UC3);
+    for (int y = 0; y < srcImg.rows; y++) {
+        uchar* srcR= srcImg.ptr<uchar>(y);
+        uchar* dstR= dst.ptr<uchar>(y);
+        int br,bg,bb;
+        for (int x = 0; x < srcImg.cols; x++) {
+            br = srcR[3*x];
+            bg = srcR[3*x+1];
+            bb = srcR[3*x+2];
+
+            dstR[3*x]= 255-br;
+            dstR[3*x+1]= 255-bg;
+            dstR[3*x+2]= 255-bb;
+        }
+    }
+    showLabel(dst,ui->label_2);
+}
+
+
+void MainWindow::on_actionglare_triggered()
+{
+    cv::Mat dst(srcImg.size(),CV_8UC3);
+    for (int y = 0; y < srcImg.rows; y++) {
+        uchar* srcR= srcImg.ptr<uchar>(y);
+        uchar* dstR= dst.ptr<uchar>(y);
+        int br,bg,bb;
+        for (int x = 0; x < srcImg.cols; x++) {
+            br = srcR[3*x];
+            bg = srcR[3*x+1];
+            bb = srcR[3*x+2];
+
+            br=br>127.5? br+(255-br)*(br-127.5)/127.5:br*br/127.5;
+            br=br>255?255:br;
+            br=br<0?0:br;
+
+            bg=bg>127.5? bg+(255-bg)*(bg-127.5)/127.5:bg*bg/127.5;
+            bg=bg>255?255:bg;
+            bg=bg<0?0:bg;
+
+            bb=bb>127.5? bb+(255-bb)*(bb-127.5)/127.5:bb*bb/127.5;
+            bb=bb>255?255:bb;
+            bb=bb<0?0:bb;
+
+            dstR[3*x]= br;
+            dstR[3*x+1]= bg;
+            dstR[3*x+2]= bb;
+        }
+    }
+    showLabel(dst,ui->label_2);
+}
+
+
+void MainWindow::on_actionblack_and_white_negative_triggered()
+{
+    cv::Mat dst(srcImg.size(),CV_8UC3);
+    for (int y = 0; y < srcImg.rows; y++) {
+        uchar* srcR= srcImg.ptr<uchar>(y);
+        uchar* dstR= dst.ptr<uchar>(y);
+        int br,bg,bb;
+        for (int x = 0; x < srcImg.cols; x++) {
+            br = srcR[3*x];
+            bg = srcR[3*x+1];
+            bb = srcR[3*x+2];
+
+            dstR[3*x]= 255-br;
+            dstR[3*x+1]= 255-bg;
+            dstR[3*x+2]= 255-bb;
+        }
+    }
+    cv::cvtColor(dst,dstImg,cv::COLOR_RGB2GRAY);
+    cv::Size dsize=cv::Size(ui->label_2->width(),ui->label_2->height());
+    cv::resize(dstImg,dstImg,dsize);
+    myImg = QImage((const unsigned char*)(dstImg.data),dstImg.cols,dstImg.rows,dstImg.cols*dstImg.channels(),QImage::Format_Indexed8);
+    ui->label_2->clear();
+    ui->label_2->setPixmap(QPixmap::fromImage(myImg));
+}
+
+
+void MainWindow::on_actioneffect_1_triggered()
+{
+    cv::Mat dst(srcImg.size(),CV_8UC3);
+    for (int i = 1; i < srcImg.rows-1; i++) {
+        uchar *current = srcImg.ptr<uchar>(i);
+        uchar *currentBefore = srcImg.ptr<uchar>(i-1);
+        uchar *dstLine = dst.ptr<uchar>(i);
+        for (int j = 0; j < srcImg.cols-1; j++) {
+            for (int k = 0; k < 3; k++) {
+                int tmp0 = current[3*j+k]-currentBefore[3*(j-1)+k]+128;
+                if (tmp0<0)
+                    dstLine[3*j+k]=0;
+                else if(tmp0>255)
+                    dstLine[3*j+k]=255;
+                else
+                    dstLine[3*j+k]=tmp0;
+            }
+        }
+    }
+    dst.copyTo(dstImg);
+    showLabel(dstImg,ui->label_2);
+}
+
+
+void MainWindow::on_actioneffect_2_triggered()
+{
+    cv::Mat dst(srcImg.size(),CV_8UC3);
+    for (int i = 1; i < srcImg.rows-1; i++) {
+        uchar *current = srcImg.ptr<uchar>(i);
+        uchar *currentBefore = srcImg.ptr<uchar>(i-1);
+        uchar *dstLine = dst.ptr<uchar>(i);
+        for (int j = 0; j < srcImg.cols-1; j++) {
+            for (int k = 0; k < 3; k++) {
+                int tmp0 = current[3*(j+1)+k]-currentBefore[3*j+k]+128;
+                if (tmp0<0)
+                    dstLine[3*j+k]=0;
+                else if(tmp0>255)
+                    dstLine[3*j+k]=255;
+                else
+                    dstLine[3*j+k]=tmp0;
+            }
+        }
+    }
+    dst.copyTo(dstImg);
+    showLabel(dstImg,ui->label_2);
+}
+
+
+void MainWindow::on_actioneffect_3_triggered()
+{
+    cv::Mat dst(srcImg.size(),CV_8UC3);
+    for (int i = 1; i < srcImg.rows-1; i++) {
+        uchar *current = srcImg.ptr<uchar>(i);
+        uchar *currentBefore = srcImg.ptr<uchar>(i-1);
+        uchar *dstLine = dst.ptr<uchar>(i);
+        for (int j = 0; j < srcImg.cols-1; j++) {
+            for (int k = 0; k < 3; k++) {
+                int tmp0 = current[3*(j+3)+k]-currentBefore[3*(j-3)+k]+200;
+                if (tmp0<0)
+                    dstLine[3*j+k]=0;
+                else if(tmp0>255)
+                    dstLine[3*j+k]=255;
+                else
+                    dstLine[3*j+k]=tmp0;
+            }
+        }
+    }
+    dst.copyTo(dstImg);
+    showLabel(dstImg,ui->label_2);
+}
+
+
+void MainWindow::on_actioneffect_4_triggered()
+{
+    cv::Mat dst(srcImg.size(),CV_8UC3);
+    for (int i = 1; i < srcImg.rows-1; i++) {
+        uchar *current = srcImg.ptr<uchar>(i);
+        uchar *currentBefore = srcImg.ptr<uchar>(i-1);
+        uchar *dstLine = dst.ptr<uchar>(i);
+        for (int j = 0; j < srcImg.cols-1; j++) {
+            for (int k = 0; k < 3; k++) {
+                int tmp0 = current[3*(j+3)+k]-currentBefore[3*(j-3)+k]+40;
+                if (tmp0<0)
+                    dstLine[3*j+k]=0;
+                else if(tmp0>255)
+                    dstLine[3*j+k]=255;
+                else
+                    dstLine[3*j+k]=tmp0;
+            }
+        }
+    }
+    dst.copyTo(dstImg);
+    showLabel(dstImg,ui->label_2);
+}
+
+
+void MainWindow::on_actioneffect_A_triggered()
+{
+    cv::Mat dst(srcImg.size(),CV_8UC3);
+    for (int i = 1; i < srcImg.rows-1; i++) {
+        uchar *current = srcImg.ptr<uchar>(i);
+        uchar *currentBefore = srcImg.ptr<uchar>(i-1);
+        uchar *dstLine = dst.ptr<uchar>(i);
+        for (int j = 0; j < srcImg.cols-1; j++) {
+            for (int k = 0; k < 3; k++) {
+                int tmp0 = current[3*j+k]-currentBefore[3*(j+1)+k]+128;
+                if (tmp0<0)
+                    dstLine[3*j+k]=0;
+                else if(tmp0>255)
+                    dstLine[3*j+k]=255;
+                else
+                    dstLine[3*j+k]=tmp0;
+            }
+        }
+    }
+    dst.copyTo(dstImg);
+    showLabel(dstImg,ui->label_2);
+}
+
+
+void MainWindow::on_actioneffect_B_triggered()
+{
+    cv::Mat dst(srcImg.size(),CV_8UC3);
+    for (int i = 1; i < srcImg.rows-1; i++) {
+        uchar *current = srcImg.ptr<uchar>(i);
+        uchar *currentBefore = srcImg.ptr<uchar>(i-1);
+        uchar *dstLine = dst.ptr<uchar>(i);
+        for (int j = 0; j < srcImg.cols-1; j++) {
+            for (int k = 0; k < 3; k++) {
+                int tmp0 = current[3*(j-1)+k]-currentBefore[3*j+k]+128;
+                if (tmp0<0)
+                    dstLine[3*j+k]=0;
+                else if(tmp0>255)
+                    dstLine[3*j+k]=255;
+                else
+                    dstLine[3*j+k]=tmp0;
+            }
+        }
+    }
+    dst.copyTo(dstImg);
+    showLabel(dstImg,ui->label_2);
+}
+
+
+void MainWindow::on_actioneffect_C_triggered()
+{
+    cv::Mat dst(srcImg.size(),CV_8UC3);
+    for (int i = 1; i < srcImg.rows-1; i++) {
+        uchar *current = srcImg.ptr<uchar>(i);
+        uchar *currentBefore = srcImg.ptr<uchar>(i-1);
+        uchar *dstLine = dst.ptr<uchar>(i);
+        for (int j = 0; j < srcImg.cols-1; j++) {
+            for (int k = 0; k < 3; k++) {
+                int tmp0 = current[3*(j-3)+k]-currentBefore[3*(j+3)+k]+200;
+                if (tmp0<0)
+                    dstLine[3*j+k]=0;
+                else if(tmp0>255)
+                    dstLine[3*j+k]=255;
+                else
+                    dstLine[3*j+k]=tmp0;
+            }
+        }
+    }
+    dst.copyTo(dstImg);
+    showLabel(dstImg,ui->label_2);
+}
+
+
+void MainWindow::on_actioneffect_D_triggered()
+{
+    cv::Mat dst(srcImg.size(),CV_8UC3);
+    for (int i = 1; i < srcImg.rows-1; i++) {
+        uchar *current = srcImg.ptr<uchar>(i);
+        uchar *currentBefore = srcImg.ptr<uchar>(i-1);
+        uchar *dstLine = dst.ptr<uchar>(i);
+        for (int j = 0; j < srcImg.cols-1; j++) {
+            for (int k = 0; k < 3; k++) {
+                int tmp0 = current[3*(j-3)+k]-currentBefore[3*(j+3)+k]+40;
+                if (tmp0<0)
+                    dstLine[3*j+k]=0;
+                else if(tmp0>255)
+                    dstLine[3*j+k]=255;
+                else
+                    dstLine[3*j+k]=tmp0;
+            }
+        }
+    }
+    dst.copyTo(dstImg);
+    showLabel(dstImg,ui->label_2);
+}
+
+
+void MainWindow::on_actionversion_triggered()
+{
+    QMessageBox::information(this,"关于",tr("本软件当前版本为V1.0"));
+}
+
+
+void MainWindow::on_actionauthor_triggered()
+{
+    QMessageBox::information(this,"版权",tr("本软件版权所有者：201006206张艾明"));
 }
 

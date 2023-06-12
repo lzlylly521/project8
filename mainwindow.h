@@ -72,6 +72,36 @@ private slots:
 
     void on_actioncomic_strip_triggered();
 
+    void on_actionmelt_triggered();
+
+    void on_actionfreeze_triggered();
+
+    void on_actioninverted_triggered();
+
+    void on_actionglare_triggered();
+
+    void on_actionblack_and_white_negative_triggered();
+
+    void on_actioneffect_1_triggered();
+
+    void on_actioneffect_2_triggered();
+
+    void on_actioneffect_3_triggered();
+
+    void on_actioneffect_4_triggered();
+
+    void on_actioneffect_A_triggered();
+
+    void on_actioneffect_B_triggered();
+
+    void on_actioneffect_C_triggered();
+
+    void on_actioneffect_D_triggered();
+
+    void on_actionversion_triggered();
+
+    void on_actionauthor_triggered();
+
 private:
     Ui::MainWindow *ui;
 
