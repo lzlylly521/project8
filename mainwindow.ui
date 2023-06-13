@@ -147,6 +147,12 @@
     <addaction name="actionversion"/>
     <addaction name="actionauthor"/>
    </widget>
+   <widget class="QMenu" name="menu_8">
+    <property name="title">
+     <string>测试</string>
+    </property>
+    <addaction name="actiontest1"/>
+   </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
    <addaction name="menu_3"/>
@@ -154,6 +160,7 @@
    <addaction name="menu_5"/>
    <addaction name="menu_6"/>
    <addaction name="menu_7"/>
+   <addaction name="menu_8"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actiondefault_file">
@@ -347,6 +354,11 @@
   <action name="actionexit">
    <property name="text">
     <string>exit</string>
+   </property>
+  </action>
+  <action name="actiontest1">
+   <property name="text">
+    <string>test1</string>
    </property>
   </action>
  </widget>

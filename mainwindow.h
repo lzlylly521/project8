@@ -102,6 +102,8 @@ private slots:
 
     void on_actionauthor_triggered();
 
+    void on_actiontest1_triggered();
+
 private:
     Ui::MainWindow *ui;
 

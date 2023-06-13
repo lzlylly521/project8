@@ -61,6 +61,7 @@ void MainWindow::on_actioncustomization_file_triggered()
         ui->label_1->clear();
         myImg = myImg.scaled(ui->label_1->width(),ui->label_1->height());
         ui->label_1->setPixmap(QPixmap::fromImage(myImg));
+        ui->statusbar->showMessage(QString::number(srcImg.type()));
     }
 }
 
@@ -68,7 +69,7 @@ void MainWindow::on_actioncustomization_file_triggered()
 void MainWindow::on_actionrehabilitation_triggered()
 {
     srcImg.copyTo(dstImg);
-    myImg = QImage((const unsigned char*)(dstImg.data),dstImg.cols,dstImg.rows,dstImg.rows*dstImg.channels(),QImage::Format_RGB888);
+    myImg = QImage((const unsigned char*)(dstImg.data),dstImg.cols,dstImg.rows,dstImg.cols*dstImg.channels(),QImage::Format_RGB888);
     myImg = myImg.scaled(ui->label_1->size());
     ui->label_2->setPixmap(QPixmap::fromImage(myImg));
 }
@@ -88,6 +89,22 @@ void MainWindow::on_actionexit_triggered()
     exit(0);
 }
 
+void MainWindow::showLabel(cv::Mat img,QLabel *l)
+{
+    //    qDebug
+    if(img.empty())
+    {
+        ui->statusbar->showMessage("空图像");
+    }
+    else
+    {
+        myImg = QImage((const unsigned char*)(img.data),img.cols,img.rows,img.step,QImage::Format_RGB888);
+        l->clear();
+        myImg = myImg.scaled(l->width(),l->height());
+        l->setPixmap(QPixmap::fromImage(myImg));
+    }
+
+}
 
 void MainWindow::on_actionold_photos_triggered()
 {
@@ -112,26 +129,9 @@ void MainWindow::on_actionold_photos_triggered()
             q0[3*j+1] = dstG;
             q0[3*j+2] = dstB;
         }
-        cv::Size dsize = cv::Size(ui->label_2->width(),ui->label_2->height());
-        cv::resize(srcImg,dstImg,dsize);
-        myImg = QImage((const unsigned char*)(dstImg.data),dstImg.cols,dstImg.rows,dstImg.cols*dstImg.channels(),QImage::Format_Indexed8);
-        ui->label_2->clear();
-        ui->label_2->setPixmap(QPixmap::fromImage(myImg));
-//        showLabel(dstImg,ui->label_2);
-        qDebug()<<"1111111111111111";
     }
+    showLabel(dstImg,ui->label_2);
 }
-
-void MainWindow::showLabel(cv::Mat img,QLabel *l)
-{
-//    qDebug
-    myImg = QImage((const unsigned char*)(img.data),img.cols,img.rows,img.rows*img.channels(),QImage::Format_RGB888);
-    l->clear();
-    myImg = myImg.scaled(l->width(),l->height());
-    l->setPixmap(QPixmap::fromImage(myImg));
-}
-
-
 
 void MainWindow::on_actionred_green_swap_triggered()
 {
@@ -157,9 +157,9 @@ void MainWindow::on_actionred_green_swap_triggered()
             q0[3*j+1] = dstG;
             q0[3*j+2] = dstB;
         }
-        cv::cvtColor(dstImg,dstImg,cv::COLOR_RGB2BGR);
-        showLabel(dstImg,ui->label_2);
     }
+    cv::cvtColor(dstImg,dstImg,cv::COLOR_RGB2BGR);
+    showLabel(dstImg,ui->label_2);
 }
 
 
@@ -364,9 +364,9 @@ void MainWindow::on_actiondifuse_triggered()
             dstR[3*x+1]=srcImg.at<uchar>(y-1+myRand/3,3*(x-1+myRand%3)+1);
             dstR[3*x+2]=srcImg.at<uchar>(y-1+myRand/3,3*(x-1+myRand%3)+2);
         }
-        dst.copyTo(dstImg);
-        showLabel(dstImg,ui->label_2);
     }
+    dst.copyTo(dstImg);
+    showLabel(dstImg,ui->label_2);
 }
 
 
@@ -555,11 +555,6 @@ void MainWindow::on_actioncomic_strip_triggered()
     }
     normalize(dst,dst,255,0,cv::NORM_MINMAX);
     showLabel(dst,ui->label_2);
-//    cv::Size dsize=cv::Size(ui->label_2->width(),ui->label_2->height());
-//    cv::resize(dst,dstImg,dsize);
-//    myImg = QImage((const unsigned char*)(dstImg.data),dstImg.cols,dstImg.rows,dstImg.cols*dstImg.channels(),QImage::Format_Indexed8);
-//    ui->label_2->clear();
-//    ui->label_2->setPixmap(QPixmap::fromImage(myImg));
 }
 
 
@@ -910,5 +905,34 @@ void MainWindow::on_actionversion_triggered()
 void MainWindow::on_actionauthor_triggered()
 {
     QMessageBox::information(this,"版权",tr("本软件版权所有者：201006206张艾明"));
+}
+
+
+void MainWindow::on_actiontest1_triggered()
+{
+    cv::Mat dstImg(srcImg.size(),CV_8UC3);
+    for (int i = 1; i < srcImg.rows-1; i = i++)
+    {
+        uchar *p0 = srcImg.ptr<uchar>(i);
+        uchar *q0 = dstImg.ptr<uchar>(i);
+        for (int j = 0; j < srcImg.cols;j++)
+        {
+            int srcR = p0[3*j];
+            int srcG = p0[3*j+1];
+            int srcB = p0[3*j+2];
+            int dstR,dstG,dstB;
+            dstR = (101 * srcR + 197 * srcG + 48 * srcB) >> 8;
+            dstG = (89 * srcR + 176 * srcG + 43 * srcB) >> 8;
+            dstB = (70 * srcR + 137 * srcG + 34 * srcB) >> 8;
+            dstR = dstR>255?255:dstR;
+            dstG = dstG>255?255:dstG;
+            dstB = dstB>255?255:dstB;
+            q0[3*j] = dstR;
+            q0[3*j+1] = dstG;
+            q0[3*j+2] = dstB;
+        }
+        cv::cvtColor(dstImg,dstImg,cv::COLOR_RGB2BGRA);
+    }
+    showLabel(dstImg,ui->label_2);
 }
 
