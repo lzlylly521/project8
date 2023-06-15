@@ -153,6 +153,16 @@
     </property>
     <addaction name="actiontest1"/>
    </widget>
+   <widget class="QMenu" name="menu_9">
+    <property name="title">
+     <string>景物识别</string>
+    </property>
+    <addaction name="actionScene_recognition"/>
+    <addaction name="actionopen_camera"/>
+    <addaction name="actionclose_camera"/>
+    <addaction name="actionTM_CCOEFF_NORMED"/>
+    <addaction name="actionTM_SQDIFF_NORMED"/>
+   </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
    <addaction name="menu_3"/>
@@ -161,6 +171,7 @@
    <addaction name="menu_6"/>
    <addaction name="menu_7"/>
    <addaction name="menu_8"/>
+   <addaction name="menu_9"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actiondefault_file">
@@ -359,6 +370,31 @@
   <action name="actiontest1">
    <property name="text">
     <string>test1</string>
+   </property>
+  </action>
+  <action name="actionScene_recognition">
+   <property name="text">
+    <string>Scene recognition</string>
+   </property>
+  </action>
+  <action name="actionopen_camera">
+   <property name="text">
+    <string>open camera</string>
+   </property>
+  </action>
+  <action name="actionclose_camera">
+   <property name="text">
+    <string>close camera</string>
+   </property>
+  </action>
+  <action name="actionTM_CCOEFF_NORMED">
+   <property name="text">
+    <string>TM_CCOEFF_NORMED</string>
+   </property>
+  </action>
+  <action name="actionTM_SQDIFF_NORMED">
+   <property name="text">
+    <string>TM_SQDIFF_NORMED</string>
    </property>
   </action>
  </widget>

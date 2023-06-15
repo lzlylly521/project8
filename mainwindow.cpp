@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QDebug>
+#include <QTimer>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -12,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    myTimer = new QTimer();
+    connect(myTimer,SIGNAL(timeout()),this,SLOT(slotTimeoutCB()));
 }
 
 MainWindow::~MainWindow()
@@ -934,5 +937,198 @@ void MainWindow::on_actiontest1_triggered()
         cv::cvtColor(dstImg,dstImg,cv::COLOR_RGB2BGRA);
     }
     showLabel(dstImg,ui->label_2);
+}
+
+
+void MainWindow::on_actionScene_recognition_triggered()
+{
+    int mini = getResultNumber();
+
+    cv::cvtColor(srcImage[mini],srcImage[mini],cv::COLOR_BGR2RGB);
+
+    img = QImage((const unsigned char*) (srcImage[mini].data),
+                 srcImage[mini].cols,srcImage[mini].rows,
+                 srcImage[mini].cols*srcImage[mini].channels(),
+                 QImage::Format_RGB888);
+
+    ui->label_2->clear();
+
+    img = img.scaled(ui->label_2->width(),ui->label_2->height());
+
+    ui->label_2->setPixmap(QPixmap::fromImage(img));
+}
+
+
+void MainWindow::on_actionopen_camera_triggered()
+{
+    myTimer->start(100);
+    if(!Camera.isOpened())
+    {
+        Camera.open(0);
+        ui->statusbar->showMessage("open camera is good");
+    }
+    Camera.read(srcImg);
+    displayImageFunc(ui->label_1,srcImg);
+
+}
+
+
+void MainWindow::on_actionclose_camera_triggered()
+{
+    ui->label_1->clear();
+    if(Camera.isOpened())
+    {
+        myTimer->stop();          // 停止读取数据。
+        Camera.release();
+    }
+}
+
+void MainWindow::displayImageFunc(QLabel *label, const cv::Mat &inputImg)
+{
+    QImage tmpQImg;
+    cvtColor(inputImg,tmpImg,cv::COLOR_BGR2RGB);
+    cv::resize(tmpImg,tmpImg,cv::Size(label->width(),label->height()));
+    if(inputImg.type() == CV_8UC1)
+    {
+        //单通道图像，灰度图像
+        //Mat转QImage
+        tmpQImg = QImage((const uchar*)tmpImg.data,
+                         tmpImg.cols,tmpImg.rows,tmpImg.step,
+                         QImage::Format_Indexed8);
+        label->setPixmap(QPixmap::fromImage(tmpQImg));
+    }
+    else if(inputImg.type() == CV_8UC3)
+    {
+        tmpQImg = QImage((const uchar*)tmpImg.data,
+                         tmpImg.cols,tmpImg.rows,tmpImg.step,
+                         QImage::Format_RGB888);
+        label->setPixmap(QPixmap::fromImage(tmpQImg));
+    }
+
+}
+
+
+void MainWindow::getFeature(cv::Mat m, float a[25])
+{
+    int M,N;
+    int i,j;
+    M = m.cols;
+    N = m.rows;
+    for(i = 0;i < 25;i++)
+    {
+        a[i] = 0;
+    }
+
+    for(i = 0;i<M;i++)
+    {
+        for (j = 0; j < N; j++)
+        {
+            if(m.at<uchar>(i,j)==255){
+                a[i/(M/5)*5+j/(N/5)]++;
+            }
+        }
+    }
+    for (i = 0; i < 25; i++)
+    {
+        a[i] = a[i]/(M/5)*(N/5);
+    }
+}
+
+float MainWindow::ouDistance(float a[25],float b[25])
+{
+    int i;
+    float distance = 0;
+
+    for (i = 0; i < 25; i++)
+    {
+        distance += (a[i]-b[i])*(a[i]-b[i]);
+    }
+    distance = cv::sqrt(distance);
+    return distance;
+}
+
+int MainWindow::getResultNumber()
+{
+    int i;
+    float min;
+    int mini;
+    getFeature(testImage,testFeature);
+    for (i = 0; i < 10; i++) {
+        QString filePath,fileName,allName;
+        filePath = "D:/learn/333333333/mark/imgae";
+        fileName = ".png";
+        allName = filePath + "\\" + QString::number(i) + fileName;
+        std::string s = allName.toStdString();
+        srcImage[i] = cv::imread(s);
+    }
+
+    for (i = 0; i < 10; i++) {
+        getFeature(srcImage[i],srcFeature[i]);
+    }
+
+    float ouDistanceValue[10] = {0};
+
+    for (i = 0; i < 10; i++) {
+        ouDistanceValue[i] = ouDistance(testFeature,srcFeature[i]);
+    }
+
+    mini = 0;
+
+    min = ouDistanceValue[0];
+
+    for (i = 0; i < 10; i++) {
+        if(min>ouDistanceValue[i])
+        {
+            min = ouDistanceValue[i];
+            mini = i;
+        }
+    }
+    return mini;
+}
+
+
+
+
+void MainWindow::on_actionTM_CCOEFF_NORMED_triggered()
+{
+    ui->statusbar->showMessage("正常执行绘制直线功能");
+
+    cv::Mat myResult;
+    if(!srcImg.empty()&&!tempImg.empty())
+    {;
+        cv::matchTemplate(srcImg,tempImg,myResult,cv::TM_CCORR_NORMED);
+    }
+    double minV,maxV;
+    cv::Point minP,maxP;
+    cv::minMaxLoc(myResult,&minV,&maxV,&minP,&maxP);
+
+    cv::rectangle(srcImg,cv::Rect(minP.x,minP.y,tempImg.cols,tempImg.rows),cv::Scalar(255,0,0),3);
+    cv::imshow("line",srcImg);
+    myImg = QImage((const uchar*)srcImg.data,srcImg.cols,
+                   srcImg.rows,srcImg.step,QImage::Format_RGB888);
+    myImg = myImg.scaled(ui->label_1->size());
+    ui->label_1->setPixmap(QPixmap::fromImage(myImg.rgbSwapped()));
+}
+
+
+void MainWindow::on_actionTM_SQDIFF_NORMED_triggered()
+{
+    ui->statusbar->showMessage("正常执行绘制直线功能");
+
+    cv::Mat myResult;
+    if(!srcImg.empty()&&!tempImg.empty())
+    {
+        cv::matchTemplate(srcImg,tempImg,myResult,cv::TM_SQDIFF_NORMED);
+    }
+    double minV,maxV;
+    cv::Point minP,maxP;
+    cv::minMaxLoc(myResult,&minV,&maxV,&minP,&maxP);
+
+    cv::rectangle(srcImg,cv::Rect(minP.x,minP.y,tempImg.cols,tempImg.rows),cv::Scalar(255,0,0),3);
+    cv::imshow("line",srcImg);
+    myImg = QImage((const uchar*)srcImg.data,srcImg.cols,
+                   srcImg.rows,srcImg.step,QImage::Format_RGB888);
+    myImg = myImg.scaled(ui->label_1->size());
+    ui->label_1->setPixmap(QPixmap::fromImage(myImg.rgbSwapped()));
 }
 

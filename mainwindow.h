@@ -17,6 +17,10 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+signals:
+    void timeout();
+
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -104,12 +108,44 @@ private slots:
 
     void on_actiontest1_triggered();
 
+    void on_actionScene_recognition_triggered();
+
+    void on_actionopen_camera_triggered();
+
+    void on_actionclose_camera_triggered();
+
+
+
+    void on_actionTM_CCOEFF_NORMED_triggered();
+
+    void on_actionTM_SQDIFF_NORMED_triggered();
+
+private:
+
+    void displayImageFunc(QLabel *label, const cv::Mat &inputImg);
+    void getFeature(cv::Mat m, float a[]);
+    float ouDistance(float a[], float b[]);
+    int getResultNumber();
+
 private:
     Ui::MainWindow *ui;
 
     cv::Mat srcImg; //读入原始图像数据
     cv::Mat dstImg; //存放处理后的图像数据
     QImage myImg;
+    cv::Mat tmpImg;//临时图像
+    cv::Mat shotImg;//短期图像
+    QImage myQImg;//显示图像
+    QTimer *myTimer;//创建定时器指针
+    cv::Mat tempImg; //模板图像
+    cv::Mat testImage;
+    cv::Mat srcImage[10];
+    cv::Mat dstImage;
+    QImage img;
+    float testFeature[25];
+    float srcFeature[10][25];
+
+    cv::VideoCapture Camera;
 
 };
 
