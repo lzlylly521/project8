@@ -6,6 +6,7 @@
 
 #include <QLabel>
 #include <opencv2/opencv.hpp>
+#include <QTimer>
 
 
 QT_BEGIN_NAMESPACE
@@ -104,13 +105,35 @@ private slots:
 
     void on_actiontest1_triggered();
 
+    void on_actionopen_Camera_triggered();
+
+    void on_actionclose_Camera_triggered();
+
+    void on_actionTM_CCOEFF_NORMED_triggered();
+
+    void on_actionTM_SQDIFF_NORMED_triggered();
+
+private slots:
+    void slotTimeoutCB();
+
+    void on_actionopen_targetImage_triggered();
+
+    void on_actionvideo_filter_triggered();
+
 private:
     Ui::MainWindow *ui;
 
     cv::Mat srcImg; //读入原始图像数据
     cv::Mat dstImg; //存放处理后的图像数据
+    cv::Mat scdImg;
+    cv::Mat tmpImg;
+    cv::Mat tempImg; //模板图像
     QImage myImg;
 
+    QTimer* myTimer;
+    cv::VideoCapture Camera;
+
+    void displayImageFunc(QLabel *label, const cv::Mat &inputImg);
 };
 
 #endif // MAINWINDOW_H

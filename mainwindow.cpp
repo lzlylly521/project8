@@ -12,6 +12,11 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    myTimer = new QTimer(this);
+    connect(myTimer,SIGNAL(timeout()),this,SLOT(slotTimeoutCB()));
+    connect(myTimer,SIGNAL(timeout()),this,SLOT(on_actionopen_Camera_triggered()));
+    connect(myTimer,SIGNAL(timeout()),this,SLOT(on_actionTM_SQDIFF_NORMED_triggered()));
+    connect(myTimer,SIGNAL(timeout()),this,SLOT(on_actionTM_CCOEFF_NORMED_triggered()));
 }
 
 MainWindow::~MainWindow()
@@ -934,5 +939,134 @@ void MainWindow::on_actiontest1_triggered()
         cv::cvtColor(dstImg,dstImg,cv::COLOR_RGB2BGRA);
     }
     showLabel(dstImg,ui->label_2);
+}
+
+
+void MainWindow::on_actionopen_Camera_triggered()
+{
+    myTimer->start(33);
+    ui->label_3->clear();
+    if(!Camera.isOpened())
+    {
+        Camera.open(0,cv::CAP_DSHOW);
+    }
+    Camera.read(scdImg);
+    displayImageFunc(ui->label_3,scdImg);
+}
+
+
+void MainWindow::on_actionclose_Camera_triggered()
+{
+    myTimer->stop();
+    ui->label_3->clear();
+    Camera.release();
+}
+
+//自定义摄像头
+
+void MainWindow::displayImageFunc(QLabel *label, const cv::Mat &inputImg)
+{
+    QImage tmpQImg;
+    cvtColor(inputImg,tempImg,cv::COLOR_BGR2RGB);
+    cv::resize(tempImg,tempImg,cv::Size(label->width(),label->height()));
+    if(inputImg.type() == CV_8UC1)
+    {
+        //单通道图像，灰度图像
+        //Mat转QImage
+        tmpQImg = QImage((const uchar*)tempImg.data,
+                         tempImg.cols,tempImg.rows,tempImg.step,
+                         QImage::Format_Indexed8);
+        label->setPixmap(QPixmap::fromImage(tmpQImg));
+    }
+    else if(inputImg.type() == CV_8UC3)
+    {
+        tmpQImg = QImage((const uchar*)tempImg.data,
+                         tempImg.cols,tempImg.rows,tempImg.step,
+                         QImage::Format_RGB888);
+        label->setPixmap(QPixmap::fromImage(tmpQImg));
+    }
+}
+
+void MainWindow::slotTimeoutCB()
+{
+    QMessageBox* box = new QMessageBox();
+    box->setText("error");
+}
+
+
+void MainWindow::on_actionTM_CCOEFF_NORMED_triggered()
+{
+//    ui->statusbar->showMessage("正常执行绘制直线功能");
+    cv::Mat myResult;
+    if(!scdImg.empty()&&!tmpImg.empty())
+    {
+        cv::matchTemplate(scdImg,tmpImg,myResult,cv::TM_CCORR_NORMED);
+    }
+    double minV,maxV;
+    cv::Point minP,maxP;
+    cv::minMaxLoc(myResult,&minV,&maxV,&minP,&maxP);
+
+    cv::rectangle(scdImg,cv::Rect(minP.x,minP.y,tmpImg.cols,tmpImg.rows),cv::Scalar(255,0,0),3);
+    cv::imshow("line",scdImg);
+    myImg = QImage((const uchar*)scdImg.data,scdImg.cols,
+                   scdImg.rows,scdImg.step,QImage::Format_RGB888);
+    myImg = myImg.scaled(ui->label_4->size());
+    ui->label_4->setPixmap(QPixmap::fromImage(myImg.rgbSwapped()));
+}
+
+
+void MainWindow::on_actionTM_SQDIFF_NORMED_triggered()
+{
+//    ui->statusbar->showMessage("正常执行绘制直线功能");
+    cv::Mat myResult;
+    if(!scdImg.empty()&&!tmpImg.empty())
+    {
+        cv::matchTemplate(scdImg,tmpImg,myResult,cv::TM_SQDIFF_NORMED);
+    }
+    double minV,maxV;
+    cv::Point minP,maxP;
+    cv::minMaxLoc(myResult,&minV,&maxV,&minP,&maxP);
+
+    cv::rectangle(scdImg,cv::Rect(minP.x,minP.y,tmpImg.cols,tmpImg.rows),cv::Scalar(255,0,0),3);
+    cv::imshow("line",scdImg);
+    myImg = QImage((const uchar*)scdImg.data,scdImg.cols,
+                   scdImg.rows,scdImg.step,QImage::Format_RGB888);
+    myImg = myImg.scaled(ui->label_4->size());
+    ui->label_4->setPixmap(QPixmap::fromImage(myImg.rgbSwapped()));
+}
+
+
+
+
+
+void MainWindow::on_actionopen_targetImage_triggered()
+{
+    QString filename = QFileDialog::getOpenFileName(this,tr("Open Image"),"",tr("Image File(*.bmp *.jpg *.jpeg *.png"));
+    std::string name = filename.toStdString();
+    tmpImg = cv::imread(name);
+    if(tmpImg.empty())
+    {
+        QMessageBox msgBox;
+        msgBox.setText("未找到数据");
+        msgBox.exec();
+    }
+    else
+    {
+        cv::cvtColor(tmpImg,tmpImg,cv::COLOR_BGR2RGB);
+        myImg = QImage((const unsigned char*)(tmpImg.data),tmpImg.cols,tmpImg.rows,tmpImg.cols*tmpImg.channels(),QImage::Format_RGB888);
+        ui->label_1->clear();
+        myImg = myImg.scaled(ui->label_1->width(),ui->label_1->height());
+        ui->label_1->setPixmap(QPixmap::fromImage(myImg));
+        ui->statusbar->showMessage(QString::number(tmpImg.type()));
+    }
+}
+
+
+void MainWindow::on_actionvideo_filter_triggered()
+{
+    if(Camera.isOpened())
+    {
+        Camera.read(srcImg);
+    }
 }
 
