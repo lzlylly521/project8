@@ -66,6 +66,84 @@
      <string>TextLabel</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>70</y>
+      <width>161</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>随机加载图片</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>130</y>
+      <width>161</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>特征提取</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>190</y>
+      <width>161</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>打开</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_4">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>250</y>
+      <width>161</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>搜索</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_5">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>310</y>
+      <width>161</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>清除</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_6">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>370</y>
+      <width>161</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>退出</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -195,6 +273,13 @@
     <addaction name="actionTM_CCOEFF_NORMED"/>
     <addaction name="actionopen_targetImage"/>
    </widget>
+   <widget class="QMenu" name="menu_11">
+    <property name="title">
+     <string>景物识别测距离</string>
+    </property>
+    <addaction name="actionshow_image"/>
+    <addaction name="actioninput_image"/>
+   </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
    <addaction name="menu_3"/>
@@ -205,6 +290,7 @@
    <addaction name="menu_8"/>
    <addaction name="menu_9"/>
    <addaction name="menu_10"/>
+   <addaction name="menu_11"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actiondefault_file">
@@ -433,6 +519,16 @@
   <action name="actionvideo_filter">
    <property name="text">
     <string>video filter</string>
+   </property>
+  </action>
+  <action name="actionshow_image">
+   <property name="text">
+    <string>show image</string>
+   </property>
+  </action>
+  <action name="actioninput_image">
+   <property name="text">
+    <string>input image</string>
    </property>
   </action>
  </widget>

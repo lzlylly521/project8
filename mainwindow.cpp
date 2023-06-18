@@ -2,9 +2,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QMessageBox>
-#include <QFileDialog>
-#include <QDebug>
+
+
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -108,7 +107,6 @@ void MainWindow::showLabel(cv::Mat img,QLabel *l)
         myImg = myImg.scaled(l->width(),l->height());
         l->setPixmap(QPixmap::fromImage(myImg));
     }
-
 }
 
 void MainWindow::on_actionold_photos_triggered()
@@ -916,7 +914,7 @@ void MainWindow::on_actionauthor_triggered()
 void MainWindow::on_actiontest1_triggered()
 {
     cv::Mat dstImg(srcImg.size(),CV_8UC3);
-    for (int i = 1; i < srcImg.rows-1; i = i++)
+    for (int i = 1; i < srcImg.rows-1; i++)
     {
         uchar *p0 = srcImg.ptr<uchar>(i);
         uchar *q0 = dstImg.ptr<uchar>(i);
@@ -989,8 +987,7 @@ void MainWindow::displayImageFunc(QLabel *label, const cv::Mat &inputImg)
 
 void MainWindow::slotTimeoutCB()
 {
-    QMessageBox* box = new QMessageBox();
-    box->setText("error");
+
 }
 
 
@@ -1007,7 +1004,7 @@ void MainWindow::on_actionTM_CCOEFF_NORMED_triggered()
     cv::minMaxLoc(myResult,&minV,&maxV,&minP,&maxP);
 
     cv::rectangle(scdImg,cv::Rect(minP.x,minP.y,tmpImg.cols,tmpImg.rows),cv::Scalar(255,0,0),3);
-    cv::imshow("line",scdImg);
+//    cv::imshow("line",scdImg);
     myImg = QImage((const uchar*)scdImg.data,scdImg.cols,
                    scdImg.rows,scdImg.step,QImage::Format_RGB888);
     myImg = myImg.scaled(ui->label_4->size());
@@ -1028,7 +1025,7 @@ void MainWindow::on_actionTM_SQDIFF_NORMED_triggered()
     cv::minMaxLoc(myResult,&minV,&maxV,&minP,&maxP);
 
     cv::rectangle(scdImg,cv::Rect(minP.x,minP.y,tmpImg.cols,tmpImg.rows),cv::Scalar(255,0,0),3);
-    cv::imshow("line",scdImg);
+//    cv::imshow("line",scdImg);
     myImg = QImage((const uchar*)scdImg.data,scdImg.cols,
                    scdImg.rows,scdImg.step,QImage::Format_RGB888);
     myImg = myImg.scaled(ui->label_4->size());
@@ -1068,5 +1065,286 @@ void MainWindow::on_actionvideo_filter_triggered()
     {
         Camera.read(srcImg);
     }
+}
+
+void MainWindow::getFeature(cv::Mat m, int t[])
+{
+    int M,N;
+    int i,j;
+    M = m.cols;
+    N = m.rows;
+    cv::cvtColor(m,m,cv::COLOR_BGR2GRAY);
+
+    cv::Mat Feature(mm,nn,CV_32SC1,cv::Scalar::all(0));
+
+    for(i = 0;i<M;i++)
+    {
+        for (j = 0; j < N; j++)
+        {
+            Feature.at<int>(i/(M/mm),j/(N/nn)) = Feature.at<int>(i/(M/mm),j/(N/nn))+m.at<uchar>(i,j);
+        }
+        for (i = 0; i < mm; i++)
+        {
+            for (j = 0; j < nn; j++) {
+                Feature.at<int>(i,j) = Feature.at<int>(i/(M/mm),j/(N/nn));
+            }
+        }
+        int cc = 64;
+        for (i = 0; i < mm; i++)
+        {
+            for (j = 0; j < nn; j++) {
+                Feature.at<int>(i,j) /= (256/cc);
+            }
+        }
+        double sum, aver;
+        sum = 0;
+        for (i = 0; i < mm; i++)
+        {
+            for (j = 0; j < nn; j++) {
+                sum += Feature.at<int>(i,j);
+            }
+        }
+        aver = sum/(mm*nn);
+        int flag = 0;
+        for (i = 0; i < mm; i++)
+        {
+            for (j = 0; j < nn; j++) {
+                if(Feature.at<int>(i,j)>aver)
+                {
+                    t[flag++] = 1;
+                }
+                else
+                {
+                    t[flag++] = 0;
+                }
+            }
+        }
+    }
+}
+
+//float MainWindow::ouDistance(float a[25],float b[25])
+//{
+//    int i;
+//    float distance = 0;
+
+//    for (i = 0; i < 25; i++)
+//    {
+//        distance += (a[i]-b[i])*(a[i]-b[i]);
+//    }
+//    distance = cv::sqrt(distance);
+//    return distance;
+//}
+
+//int MainWindow::getResultNumber()
+//{
+//    int i;
+//    float min;
+//    int mini;
+//    getFeature(testImage,testFeature);
+//    for (i = 0; i < 25; i++) {
+//        QString filePath,fileName,allName;
+//        filePath = "image";
+//        fileName = ".jpg";
+//        allName = filePath + "\\" + QString::number(i) + fileName;
+//        std::string s = allName.toStdString();
+//        srcImage[i] = cv::imread(s);
+//    }
+
+//    for (i = 0; i < 25; i++) {
+//        getFeature(srcImage[i],srcFeature[i]);
+//    }
+
+//    float ouDistanceValue[25] = {0};
+
+//    for (i = 0; i < 25; i++) {
+//        ouDistanceValue[i] = ouDistance(testFeature,srcFeature[i]);
+//    }
+
+//    mini = 0;
+
+//    min = ouDistanceValue[0];
+
+//    for (i = 0; i < 25; i++) {
+//        if(min>ouDistanceValue[i])
+//        {
+//            min = ouDistanceValue[i];
+//            mini = i;
+//        }
+//    }
+//    return mini;
+//}
+
+
+//void MainWindow::on_actionshow_image_triggered()
+//{
+//    int mini = getResultNumber();
+
+//    cv::cvtColor(srcImage[mini],srcImage[mini],cv::COLOR_BGR2RGB);
+
+//    img = QImage((const unsigned char*) (srcImage[mini].data),
+//                 srcImage[mini].cols,srcImage[mini].rows,
+//                 srcImage[mini].cols*srcImage[mini].channels(),
+//                 QImage::Format_RGB888);
+
+//    ui->label_2->clear();
+
+//    img = img.scaled(ui->label_2->width(),ui->label_2->height());
+
+//    ui->label_2->setPixmap(QPixmap::fromImage(img));
+//}
+
+
+//void MainWindow::on_actioninput_image_triggered()
+//{
+
+//    QString filename = QFileDialog::getOpenFileName(this,tr("Open Image"),"",tr("Image File(*.bmp *.jpg *.jpeg *.png)"));
+//    std::string name = filename.toStdString().data();
+//    testImage = cv::imread(name);
+//    if(!testImage.data)
+//    {
+//        QMessageBox msgBox;
+//        msgBox.setText(tr("未找到数据"));
+//        msgBox.exec();
+//    }
+//    else
+//    {
+//        cv::cvtColor(testImage,testImage,cv::COLOR_BGR2RGB);
+//        img = QImage((const unsigned char*)(testImage.data),testImage.cols,testImage.rows, testImage.cols*testImage.channels(), QImage::Format_RGB888);
+//        ui->label_1->clear();
+//        img=  img.scaled(ui->label_1->width(), ui->label_1->height());
+//        ui->label_1->setPixmap(QPixmap::fromImage(img));
+//    }
+//}
+
+
+void MainWindow::on_pushButton_clicked()
+{
+    QString path = QFileDialog::getExistingDirectory();
+    QDir *dir = new QDir(path);
+    dir->setFilter(QDir::Files |QDir::NoSymLinks);
+    QStringList filter;
+    fileInfo = new QList<QFileInfo>(dir->entryInfoList(filter));
+    total = fileInfo->count();
+    QMessageBox::information(this,"文件路径",QString::number(total),QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+    int i;
+    srand(time(NULL));
+    int output[100] = {0};
+    int m;
+    for (i = 0; i < total; i++) {
+        while (output[m = rand()%total]);
+        output[m] = i;
+    }
+    m = rand()%total;
+    output[m] = 0;
+    getImage(fileInfo,output[0]);
+    showLabel(srcImage,ui->label_2);
+    getImage(fileInfo,output[1]);
+    showLabel(srcImage,ui->label_3);
+    getImage(fileInfo,output[2]);
+    showLabel(srcImage,ui->label_4);
+
+}
+
+void MainWindow::getImage(QList<QFileInfo> *fileInfo, int i)
+{
+    if(i >= fileInfo->count())
+    {
+        return;
+    }
+    s = fileInfo->at(i).fileName();
+    dirS = "image/";
+    dirS = dirS.append(s);
+    std::string name = dirS.toStdString();
+    srcImage = cv::imread(name);
+    cv::cvtColor(srcImage,srcImage,cv::COLOR_BGR2RGB);
+}
+
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    int i,j;
+    for (i = 0; i < total; ++i)
+    {
+        getImage(fileInfo,i);
+        int t2[mm*nn];
+        getFeature(srcImage,t2);
+        for (j = 0; j < featureNumber; j++)
+        {
+            FileFeature[i][j] = t2[j];
+        }
+    }
+    QMessageBox::about(NULL,"提示","特征提取完毕!!!");
+}
+
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    QString filename = QFileDialog::getOpenFileName(this,tr("Open Image"),"",tr("Image File(*.jpg)"));
+    std::string name = filename.toStdString().data();
+    srcImage = cv::imread(name);
+    if(!srcImage.data)
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("未找到数据"));
+        msgBox.exec();
+    }
+    else
+    {
+        cv::cvtColor(srcImage,srcImage,cv::COLOR_BGR2RGB);
+        img = QImage((const unsigned char*)(srcImage.data),srcImage.cols,srcImage.rows, srcImage.cols*srcImage.channels(), QImage::Format_RGB888);
+        ui->label_1->clear();
+        img=  img.scaled(ui->label_1->width(), ui->label_1->height());
+        ui->label_1->setPixmap(QPixmap::fromImage(img));
+    }
+}
+
+
+void MainWindow::on_pushButton_4_clicked()
+{
+    int t2[mm*nn];
+    getFeature(srcImage,t2);
+    int sameCount[fileNumber] = {0};
+    for (int i = 0; i < fileNumber; i++)
+    {
+        for (int j = 0; j < featureNumber; j++)
+        {
+            sameCount[i] += FileFeature[i][j] * t2[j];
+        }
+    }
+    int maxi[7] = {0};
+    for (int i = 0; i < 8; i++)
+    {
+        int max = sameCount[0];
+        for (int j = 0; j < fileNumber; j++)
+        {
+            if(max<sameCount[j])
+            {
+                max=sameCount[j];
+                maxi[i] = j;
+            }
+        }
+        sameCount[maxi[i]]=0;
+    }
+    getImage(fileInfo,maxi[0]);
+    showLabel(srcImage,ui->label_2);
+    getImage(fileInfo,maxi[1]);
+    showLabel(srcImage,ui->label_3);
+    getImage(fileInfo,maxi[2]);
+    showLabel(srcImage,ui->label_4);
+}
+
+
+void MainWindow::on_pushButton_5_clicked()
+{
+    ui->label_1->clear();
+    ui->label_2->clear();
+    ui->label_3->clear();
+    ui->label_4->clear();
+}
+
+
+void MainWindow::on_pushButton_6_clicked()
+{
+    exit(0);
 }
 
